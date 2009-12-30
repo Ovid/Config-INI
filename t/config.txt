@@ -1,0 +1,11 @@
+host = http://localhost/
+port = 3333
+
+[admin] 
+    ; these only apply to admin users
+    name   = Administrator
+    access = all
+
+[ anonymous ]
+    name   = Guest
+    access = none
