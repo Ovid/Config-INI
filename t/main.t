@@ -4,7 +4,6 @@
 use v6;
 use Test;
 
-use lib 'lib';
 use Config::INI;
 
 ok my Config::INI $config .= new, 'We can create Config::Tiny objects';
@@ -51,6 +50,8 @@ is_deeply $config.properties, { uno => 'dos', tres => 'quatro' },
 is_deeply $config.properties('foo bar'), { this => 'that', one => 'two' },
     '... as should the named properties';
 
+dies_ok { $config.read('no_such_file') },
+    'We should die if we try to read a non-existent file';
 ok $config.read('t/config.txt'), 'We should be able to read a file';
 is_deeply $config.properties, 
     { port => "3333", host => "http://localhost/" },

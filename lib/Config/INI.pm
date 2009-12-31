@@ -27,13 +27,17 @@ class Config::INI {
 
     method read (Str $file) {
         $.file = $file;
+
+        unless $file ~~ :e {
+            die "No such file ($file)";
+        }
         self.read_string(slurp($file));
     }
 
     # tried to do a multi to avoid the //= but couldn't multi on void sigs
     method properties (Str $name? is rw) {
         $name //= '';    
-        if ! %.sections.exists($name) {
+        if not %.sections.exists($name) {
             die "No properties found for ($name)";
         }
         return %.sections{$name};
