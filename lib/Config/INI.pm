@@ -28,9 +28,6 @@ class Config::INI {
     method read (Str $file) {
         $.file = $file;
 
-        unless $file ~~ :e {
-            die "No such file ($file)";
-        }
         self.read_string(slurp($file));
     }
 
@@ -49,6 +46,13 @@ class Config::INI {
     method read_string(Str $text) {
         %.sections = ();
         my $config = Config::INI::Grammar.parse($text);
+
+        if not $config {
+            my $file = $.file;
+            die $file 
+                ?? "Could not parse ($file): not a valid INI file"
+                !! "Could not parse string: not valid INI format";
+        }
 
         # there can only be one
         if my $root = $config<root_section>[0]<property> {

@@ -62,4 +62,7 @@ is_deeply $config.properties('admin'),
 dies_ok { $config.properties('none') },
     '... but it should die if we try to fetch unknown properties';
 
+dies_ok { $config.read('t/not_an_ini_file.yml') },
+    'Trying to read something which is not an INI file should fail';
+
 done_testing;
