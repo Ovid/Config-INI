@@ -126,7 +126,8 @@ Takes no arguments. Returns a C<Config::INI> object.
  my Config::INI .= new;
  $config.read($filename);
 
-Attempts to read an INI file.
+Attempts to read an INI file.  Will die if the filename does not exist or if
+the format does not appear to be an INI file.
 
 =head3 C<properties>
 
