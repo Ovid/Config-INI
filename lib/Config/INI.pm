@@ -1,6 +1,6 @@
 # vim:ft=perl6
 
-grammar Config::INI::Grammar {
+grammar Config::INI::Grammar:auth<cpan:OVID 0.2.1> {
     token TOP {
         <root_section>?
         <section>+
@@ -21,7 +21,7 @@ grammar Config::INI::Grammar {
     }
 }
 
-class Config::INI:auth<cpan:OVID 0.2.0> {
+class Config::INI:auth<cpan:OVID 0.2.1> {
     has %!sections is rw;
     has $.file     is rw;
 

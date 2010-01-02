@@ -5,7 +5,7 @@ use v6;
 use Test;
 
 # so far the version information appears to be a no-op
-use Config::INI:ver<v0.2.0..*>;
+use Config::INI:ver<v0.2.1..*>;
 
 ok my Config::INI $config .= new, 'We can create Config::Tiny objects';
 ok $config.can('read'), 'We should have a read() method';
