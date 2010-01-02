@@ -53,15 +53,33 @@ is_deeply $config.properties('foo bar'), { this => 'that', one => 'two' },
 
 dies_ok { $config.read('no_such_file') },
     'We should die if we try to read a non-existent file';
-ok $config.read('t/config.txt'), 'We should be able to read a file';
+
+my $file = 't/config.txt';
+ok $config.read(:$file), 'We should be able to read a file';
 is_deeply $config.properties, 
     { port => "3333", host => "http://localhost/" },
     '... and root properties should be read correctly';
 is_deeply $config.properties('admin'),
     { access => 'all', name => 'Administrator' },
     '... as should named properties';
+
 dies_ok { $config.properties('none') },
     '... but it should die if we try to fetch unknown properties';
+
+ok $config.can('file'), 'We should be able to return the filename';
+is $config.file, $file, '... have it be the correct one';
+
+$config = Config::INI.new( file => $file );
+lives_ok { $config.read },
+    'We do not need to give read() a filename if listed in the constructor';
+is_deeply $config.properties, 
+    { port => "3333", host => "http://localhost/" },
+    '... and root properties should be read correctly';
+is_deeply $config.properties('admin'),
+    { access => 'all', name => 'Administrator' },
+    '... as should named properties';
+is $config.file, $file, '... have it be the correct one';
+
 
 dies_ok { $config.read('t/not_an_ini_file.yml') },
     'Trying to read something which is not an INI file should fail';
