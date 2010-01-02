@@ -182,4 +182,9 @@ these will be the I<root> properties returned by C<$config.properties>.
 
 Attempts to write out an INI file to the appropriate C<$filename>.
 
+=head1 LICENCE
+
+This code is released under the Artistic License 2.0, a copy of which should
+be provided with the code.
+
 =end pod
