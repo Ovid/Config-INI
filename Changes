@@ -1,8 +1,12 @@
 Revision history for Config-INI
 
-0.02    - January 2, 2010
+0.2.1   January 2, 2010
+        - Make %.sections private.
+        - read() no longer requires a filename if set in constructor.
+
+0.2.0   January 2, 2010
         - Write INI files..
 
-0.01    December 31, 2009
+0.1.    December 31, 2009
         - Read INI files.
 
