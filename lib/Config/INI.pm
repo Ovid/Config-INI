@@ -21,7 +21,7 @@ grammar Config::INI::Grammar {
     }
 }
 
-class Config::INI {
+class Config::INI:auth<cpan:OVID 0.2.0> {
     has %.sections is rw;
     has $.file     is rw;
 
