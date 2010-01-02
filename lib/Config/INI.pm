@@ -22,28 +22,31 @@ grammar Config::INI::Grammar {
 }
 
 class Config::INI:auth<cpan:OVID 0.2.0> {
-    has %.sections is rw;
+    has %!sections is rw;
     has $.file     is rw;
 
-    method read (Str $file) {
-        $.file = $file;
-        self.read_string(slurp($file));
+    method read (Str $file?) {
+        $.file = $file if defined $file;
+        unless ( $file // $.file ) {
+            die "No file set to read";
+        }
+        self.read_string(slurp($file // $.file));
     }
 
     # tried to do a multi to avoid the //= but couldn't multi on void sigs
     method properties (Str $name? is rw) {
         $name //= '';    
-        if not %.sections.exists($name) {
+        if not %!sections.exists($name) {
             die "No properties found for ($name)";
         }
-        return %.sections{$name};
+        return %!sections{$name};
     }
     method add_properties(:%properties!, Str :$name = '') {
-        %.sections{$name} = %properties;
+        %!sections{$name} = %properties;
     }
 
     method read_string(Str $text) {
-        %.sections = ();
+        %!sections = ();
         my $config = Config::INI::Grammar.parse($text);
 
         if not $config {
@@ -56,13 +59,13 @@ class Config::INI:auth<cpan:OVID 0.2.0> {
         # there can only be one
         if my $root = $config<root_section>[0]<property> {
             # XXX Why do I have to stringify the value?
-            %.sections{''} = %( $root.map: { ( '' ~ $_<name> => '' ~ $_<value> ) } );
+            %!sections{''} = %( $root.map: { ( '' ~ $_<name> => '' ~ $_<value> ) } );
         }
 
         for $config<section> -> $section {
             my $name = $section<name>;
             my %properties = $section<property>.map: { ( '' ~ $_<name> => '' ~ $_<value>) };
-            %.sections{$name} = %properties;
+            %!sections{$name} = %properties;
         }
         return 1;
     }
@@ -74,7 +77,7 @@ class Config::INI:auth<cpan:OVID 0.2.0> {
                 $fh.say: "$name=$value";
             }
         }
-        for %.sections.kv -> $section, $properties {
+        for %!sections.kv -> $section, $properties {
             next if '' eq $section; # written above
             $fh.say: "\n[ $section ]"; # blank line before each section
             for $properties.kv -> $name, $value {
@@ -132,18 +135,33 @@ trimmed).
 =head3 C<new>
 
  my Config::INI $config .= new;
+ # or
+ my $config = Config::INI.new( file => $file );
 
-Takes no arguments. Returns a C<Config::INI> object.
+Returns a C<Config::INI> object.  If passed a filename, the C<read> method
+can use that filename.
 
 =head2 Instance Methods
+
+=head3 C<file>
+
+ my $filename = $config.file;
+
+Return the current filename (if set) for the C<Config::INI> object.
 
 =head3 C<read>
 
  my Config::INI .= new;
- $config.read($filename);
+ $config.read($file);
+ # or
+ my $config = Config::INI.new( file => $file );
+ $config.read;
 
 Attempts to read an INI file.  Will die if the filename does not exist or if
-the format does not appear to be an INI file.
+the format does not appear to be an INI file.  If the filename was passed in
+the constructor, you do not need to pass it to C<read>.  If you do pass a
+filename to C<read>, the C<file> method will return the new filename, not the
+constructor one.
 
 =head3 C<properties>
 
