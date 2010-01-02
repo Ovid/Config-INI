@@ -65,4 +65,29 @@ dies_ok { $config.properties('none') },
 dies_ok { $config.read('t/not_an_ini_file.yml') },
     'Trying to read something which is not an INI file should fail';
 
+$config = Config::INI.new;
+%properties = (
+    a => 'b',
+    c => 'd',
+);
+my %next = (
+    one   => 'two',
+    three => 'four',
+);
+$config.add_properties(:%properties);
+$config.add_properties(properties => %next, name => 'next');
+
+ok $config.can('write'), 'We should be able to write out our properties';
+my $ini = 't/test.ini';
+if $ini ~~ :e {
+    unlink $ini;
+}
+ok $config.write($ini), 'We can write out an INI file';
+my Config::INI $config2 .= new;
+$config2.read($ini);
+is_deeply $config2.properties, %properties,
+    '... and it should have the correct root properties';
+is_deeply $config2.properties('next'), %next,
+    '... and the correct section properties';
+
 done_testing;

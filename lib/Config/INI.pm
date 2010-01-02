@@ -27,7 +27,6 @@ class Config::INI {
 
     method read (Str $file) {
         $.file = $file;
-
         self.read_string(slurp($file));
     }
 
@@ -66,6 +65,23 @@ class Config::INI {
             %.sections{$name} = %properties;
         }
         return 1;
+    }
+
+    method write (Str $file) {
+        my $fh = open $file, :w;
+        if my $prop = self.properties {
+            for $prop.kv -> $name, $value {
+                $fh.say: "$name=$value";
+            }
+        }
+        for %.sections.kv -> $section, $properties {
+            next if '' eq $section; # written above
+            $fh.say: "\n[ $section ]"; # blank line before each section
+            for $properties.kv -> $name, $value {
+                $fh.say: "$name=$value";
+            }
+        }
+        $fh.close;
     }
 }
 
@@ -139,5 +155,31 @@ properties (properties defined before any section marker).  Otherwise,
 attempts to return a hash of the properties for a given section.
 
 Dies if we attempt to fetch properties for a section not in the INI file.
+
+=head3 C<add_properties>
+
+ # add root properties
+ $config.add_properties(properties => %hash);
+
+ # or the standard:
+ $config.add_properties(:%properties);
+
+ # add section properties
+ $config.add_properties( 
+   name       => 'admin',
+   properties => %admin,
+ );
+ # or:
+ $config.add_properties(:$name, :%properties);
+
+This method will add properties to a config object, overwriting any existing
+properties with the given C<$name>.  Note that if a name is not specified,
+these will be the I<root> properties returned by C<$config.properties>.
+
+=head3 C<write>
+
+ $config.write($filename);
+
+Attempts to write out an INI file to the appropriate C<$filename>.
 
 =end pod
