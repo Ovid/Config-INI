@@ -1,5 +1,8 @@
 Revision history for Config-INI
 
+0.2.2
+        - Merged doc patch from http://github.com/dbrunton/Config-INI/
+
 0.2.1   January 2, 2010
         - Make %.sections private.
         - read() no longer requires a filename if set in constructor.
