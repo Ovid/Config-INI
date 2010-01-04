@@ -100,10 +100,10 @@ Config::INI - Read INI files
  $config.read($file);
 
  for $config.properties.kv -> $k, $v {
-     say "$ky = $v";
+     say "$k = $v";
  }
  for $config.properties($section_name).kv -> $k, $v {
-     say "$ky = $v";
+     say "$k = $v";
  }
 
 =head1 DESCRIPTION
